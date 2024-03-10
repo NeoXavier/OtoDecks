@@ -38,7 +38,7 @@ WaveformDisplay::paint (juce::Graphics &g)
     g.fillAll(getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
     g.setColour(juce::Colours::grey);
     g.drawRect(getLocalBounds(), 1);
-    g.setColour(juce::Colours::orange);
+    g.setColour(juce::Colours::orchid);
 
 	if (fileLoaded)
 		{
@@ -46,12 +46,16 @@ WaveformDisplay::paint (juce::Graphics &g)
 			                            audioThumbnail.getTotalLength (), 0,
 			                            1.0f);
 			g.setColour (juce::Colours::lightgreen);
-            g.drawRect(position * getWidth(), 0, getWidth()/ 20, getHeight());
+            g.drawLine(position * getWidth(), 0, position * getWidth(), getHeight(), 2.0f);
+
+            // Display file name
+            g.setFont(10.0f);
+            g.drawText(fileName, getLocalBounds(), juce::Justification::centred, true);
 		}
 	else
 		{
 			g.setFont (20.0f);
-			g.drawText ("File not loaded...", getLocalBounds (),
+			g.drawText ("No file loaded...", getLocalBounds (),
 			            juce::Justification::centred,
 			            true);  // draw some placeholder text
 		}
@@ -70,6 +74,7 @@ WaveformDisplay::loadURL (juce::URL audioURL)
 	audioThumbnail.clear ();
 	fileLoaded
 	    = audioThumbnail.setSource (new juce::URLInputSource (audioURL));
+    fileName = audioURL.getFileName();
 }
 
 void

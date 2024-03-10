@@ -12,20 +12,42 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent () 
+PlaylistComponent::PlaylistComponent ()
 {
 
 	// In your constructor, you should add any child components, and
 	// initialise any special settings that your component needs.
 	addAndMakeVisible (tableComponent);
 	tableComponent.getHeader ().addColumn ("Track title", 1, 400);
-	tableComponent.getHeader ().addColumn ("Add to L Queue", 2, 200);
-	tableComponent.getHeader ().addColumn ("Add to R Queue", 3, 200);
+	tableComponent.getHeader ().addColumn ("L Queue Buttons", 2, 200);
+	tableComponent.getHeader ().addColumn ("R Queue Buttons", 3, 200);
 	tableComponent.setModel (this);
 
 	// Load Button
 	addAndMakeVisible (loadButton);
 	loadButton.addListener (this);
+
+	auto start
+	    = juce::File::getSpecialLocation (juce::File::currentExecutableFile);
+	while (start.exists () && !start.isRoot ())
+		{
+			if (start.getSiblingFile ("tracks").exists ())
+				{
+					start = start.getSiblingFile ("tracks");
+					break;
+				}
+			start = start.getParentDirectory ();
+		}
+
+	juce::Array<juce::File> fileArray;
+	start.findChildFiles (fileArray, juce::File::findFiles, false);
+	for (const auto &file : fileArray)
+		{
+			DBG (file.getFullPathName ());
+			loadedFiles.push_back (file);
+			loadedTitles.push_back (file.getFileName ());
+		}
+	tableComponent.updateContent ();
 }
 
 PlaylistComponent::~PlaylistComponent () {}
@@ -33,12 +55,6 @@ PlaylistComponent::~PlaylistComponent () {}
 void
 PlaylistComponent::paint (juce::Graphics &g)
 {
-	/* This demo code just fills the component's background and
-	   draws some placeholder text to get you started.
-
-	   You should replace everything in this method with your own
-	   drawing code..
-	*/
 
 	g.fillAll (getLookAndFeel ().findColour (
 	    juce::ResizableWindow::backgroundColourId));  // clear the background
@@ -59,7 +75,7 @@ PlaylistComponent::resized ()
 
 	tableComponent.setBounds (0, 0, getWidth (), getHeight () - 20);
 
-    loadButton.setBounds (0, getHeight()-20, getWidth (), 20);
+	loadButton.setBounds (0, getHeight () - 20, getWidth (), 20);
 }
 
 int
@@ -97,20 +113,25 @@ PlaylistComponent::refreshComponentForCell (
 
 	if (columnId == 2)
 		{
-			if (existingComponentToUpdate == nullptr)
-				{
-					juce::TextButton *btn = new juce::TextButton{ "Add to L" };
+            // If the cell has no button OR
+            // if the cell has a button that belongs to another row, as TableListBox only renders 10 rows at a time and resuses the deleted buttons for the new rows
+			if (existingComponentToUpdate == nullptr || existingComponentToUpdate->getComponentID() != juce::String{std::to_string(rowNumber) + "L"})
+            {
+					juce::TextButton *btn
+					    = new juce::TextButton{ "Add to L Queue" };
 					juce::String id{ std::to_string (rowNumber) + "L" };
 					btn->setComponentID (id);
 					btn->addListener (this);
 					existingComponentToUpdate = btn;
 				}
 		}
+
 	if (columnId == 3)
 		{
-			if (existingComponentToUpdate == nullptr)
+			if (existingComponentToUpdate == nullptr || existingComponentToUpdate->getComponentID() != juce::String{std::to_string(rowNumber) + "R"})
 				{
-					juce::TextButton *btn = new juce::TextButton{ "Add to R" };
+					juce::TextButton *btn
+					    = new juce::TextButton{ "Add to R Queue" };
 					juce::String id{ std::to_string (rowNumber) + "R" };
 					btn->setComponentID (id);
 					btn->addListener (this);
@@ -142,18 +163,27 @@ PlaylistComponent::buttonClicked (juce::Button *button)
 	else
 		{
 			juce::String id = button->getComponentID ().toStdString ();
-            if(id.getLastCharacter() == 'L')
-            {
-                std::cout << "Add to L Queue" << std::endl;
-                int fileIndex = id.dropLastCharacters(1).getIntValue();
-                leftFiles.push_back(loadedFiles[fileIndex]);
-            }
-            else
-            {
-                std::cout << "Add to R Queue" << std::endl;
-                int fileIndex = id.dropLastCharacters(1).getIntValue();
-                rightFiles.push_back(loadedFiles[fileIndex]);
-            }
+			DBG (button->getComponentID ());
+			if (id.getLastCharacter () == 'L')
+				{
+					std::cout << "Add to L Queue" << std::endl;
+					int fileIndex = id.dropLastCharacters (1).getIntValue ();
+					leftFiles.push_back (loadedFiles[fileIndex]);
+					if (leftDeck != nullptr)
+						{
+							leftDeck->queueComponent.updateContent ();
+						}
+				}
+			else
+				{
+					std::cout << "Add to R Queue" << std::endl;
+					int fileIndex = id.dropLastCharacters (1).getIntValue ();
+					rightFiles.push_back (loadedFiles[fileIndex]);
+					if (rightDeck != nullptr)
+						{
+							rightDeck->queueComponent.updateContent ();
+						}
+				}
 		}
 }
 
@@ -178,3 +208,9 @@ PlaylistComponent::filesDropped (const juce::StringArray &files, int x, int y)
 	tableComponent.updateContent ();
 }
 
+void
+PlaylistComponent::setDeck (DeckGUI *deck, juce::String id)
+{
+	if (id == "Left") { leftDeck = deck; }
+	else { rightDeck = deck; }
+}

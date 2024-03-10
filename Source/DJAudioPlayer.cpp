@@ -29,6 +29,7 @@ DJAudioPlayer::loadURL (juce::URL audioURL)
 			transportSource.setSource (newSource.get (), 0, nullptr,
 			                           reader->sampleRate);
 			readerSource.reset (newSource.release ());
+            fileLoaded = true;
 		}
 	else { std::cout << "Something went wrong loading the file" << std::endl; }
 }
@@ -37,11 +38,13 @@ void
 DJAudioPlayer::play ()
 {
 	transportSource.start ();
+    DBG("DJAudioPlayer::play() called");
 }
 
 void DJAudioPlayer::pause()
 {
     transportSource.stop();
+    DBG("DJAudioPlayer::pause() called");
 }
 
 void
@@ -49,6 +52,7 @@ DJAudioPlayer::reset ()
 {
     transportSource.setPosition (0);
 	transportSource.stop ();
+    DBG("DJAudioPlayer::reset() called");
 }
 void
 DJAudioPlayer::setGain (double gain)

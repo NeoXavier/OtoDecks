@@ -36,6 +36,8 @@ private:
 
     bool fileLoaded;
 
+    juce::String fileName;
+
     double position;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)

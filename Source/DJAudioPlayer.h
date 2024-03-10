@@ -41,11 +41,13 @@ public:
     /** get the relative position of the playhead */
     double getPositionRelative();
 
+    bool fileLoaded = false;
 
 private:
 	juce::AudioFormatManager& formatManager;
 	std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
 	juce::AudioTransportSource transportSource;
     juce::ResamplingAudioSource resampleSource{ &transportSource, false, 2 };
+    
 };
 

@@ -61,7 +61,8 @@ DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
 
 	// Queue list
 	addAndMakeVisible (queueComponent);
-	queueComponent.getHeader ().addColumn ("Queue", 1, 100);
+	queueComponent.getHeader ().addColumn ("Queue", 1, 180);
+    queueComponent.autoSizeColumn(1);
 	queueComponent.setModel (this);
 
 	// Add listeners
@@ -98,22 +99,22 @@ DeckGUI::resized ()
 	// components that your component contains..
 
 	int numOfRows = 6;
-	int numOfCols = 3;
+	int numOfCols = 6;
 	float rowH = getHeight () / numOfRows;
 	float colW = getWidth () / numOfCols;
 	int padding = 20;
 
-	resetButton.setBounds (0, 0, colW, rowH);
-	playButton.setBounds (colW, 0, colW, rowH);
-	nextButton.setBounds (colW * 2, 0, colW, rowH);
+	resetButton.setBounds (padding, padding, colW*2 - (2*padding), rowH - (2*padding));
+	playButton.setBounds (colW * 2 + padding, padding, colW *2 - (2*padding), rowH- (2*padding));
+	nextButton.setBounds (colW * 4+padding, padding, colW *2- (2*padding), rowH - (2*padding));
 
 	positionSlider.setBounds (0, rowH, getWidth (), rowH * 2);
 	waveform.setBounds (0, rowH, getWidth (), rowH * 2);
 
-    queueComponent.setBounds (0, rowH * 3, colW, rowH * 2);
-    speedSlider.setBounds (colW, rowH * 3 + padding, colW, rowH * 2 - padding);
-	volSlider.setBounds (colW * 2, rowH * 3 + padding, colW,
-	                     rowH * 2 - padding);
+	queueComponent.setBounds (0, rowH * 3, colW * 3, rowH * 3);
+	speedSlider.setBounds (colW*3, rowH * 3 + padding, colW*2, rowH * 3 - padding);
+	volSlider.setBounds (colW*5, rowH * 3 + padding, colW,
+	                     rowH * 3 - padding);
 }
 
 void
@@ -121,13 +122,71 @@ DeckGUI::buttonClicked (juce::Button *button)
 {
 	if (button == &playButton)
 		{
-			if (isPlaying) { djAudioPlayer->play (); }
-			else { djAudioPlayer->pause (); }
+            if (channel == "Left"){
+                files = &playlistComponent->leftFiles;
+            }else{
+                files = &playlistComponent->rightFiles;
+            }
+
+			if (djAudioPlayer->fileLoaded)
+				{
+					if (isPlaying)
+						{
+							DBG ("Pause song");
+							djAudioPlayer->pause ();
+							isPlaying = false;
+						}
+					else
+						{
+							DBG ("Resume song");
+							djAudioPlayer->play ();
+							isPlaying = true;
+						}
+				}
+			else
+				{
+					DBG ("Play for the first time");
+
+                    juce::File file = files->at(0);
+					djAudioPlayer->loadURL (
+					    juce::URL{file});
+
+					positionSlider.setRange (0,
+					                         djAudioPlayer->getMaxLength ());
+
+					waveform.loadURL (
+					    juce::URL{ file });
+
+                    files->erase (files->begin ());
+					queueComponent.updateContent ();
+
+					djAudioPlayer->play ();
+					isPlaying = true;
+				}
 		}
-	if (button == &nextButton) {}
-	{
-		djAudioPlayer->reset ();
-	}
+	if (button == &nextButton)
+		{
+            if (channel == "Left"){
+                files = &playlistComponent->leftFiles;
+            }else{
+                files = &playlistComponent->rightFiles;
+            }
+
+			DBG ("Next song");
+            juce::File file = files->at(0);
+
+			djAudioPlayer->loadURL (
+			    juce::URL{ file});
+
+			positionSlider.setRange (0, djAudioPlayer->getMaxLength ());
+
+			waveform.loadURL (juce::URL{file});
+
+            files->erase (files->begin ());
+			queueComponent.updateContent ();
+
+			djAudioPlayer->play ();
+		}
 	if (button == &resetButton) { djAudioPlayer->reset (); }
 }
 
@@ -156,9 +215,9 @@ DeckGUI::timerCallback ()
 int
 DeckGUI::getNumRows ()
 {
-    if (channel == "Left") { return playlistComponent->leftFiles.size (); }
-    if (channel == "Right") { return playlistComponent->rightFiles.size (); }
-    return 0;
+	if (channel == "Left") { return playlistComponent->leftFiles.size (); }
+	if (channel == "Right") { return playlistComponent->rightFiles.size (); }
+	return 0;
 }
 
 void

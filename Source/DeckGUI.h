@@ -18,6 +18,8 @@
 //==============================================================================
 /*
  */
+class PlaylistComponent;
+
 class DeckGUI : public juce::Component,
                 public juce::Button::Listener,
                 public juce::Slider::Listener,
@@ -53,6 +55,9 @@ class DeckGUI : public juce::Component,
 	void paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
 	                int height, bool rowIsSelected) override;
 
+    //Queue List
+    juce::TableListBox queueComponent;
+
   private:
     // Buttons
 	juce::TextButton playButton{ "PLAY/PAUSE" };
@@ -71,14 +76,13 @@ class DeckGUI : public juce::Component,
 
     WaveformDisplay waveform;
 
-    //Queue List
-    juce::TableListBox queueComponent;
-
     PlaylistComponent* playlistComponent;
 
     juce::String channel;
 
     bool isPlaying = false;
+    
+    std::vector<juce::File>* files;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
 };

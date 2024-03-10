@@ -25,6 +25,9 @@ MainComponent::MainComponent ()
 			setAudioChannels (2, 2);
 		}
 
+    playlistComponent.setDeck(&deck1, "Left");
+    playlistComponent.setDeck(&deck2, "Right");
+
     addAndMakeVisible (deck1);
     addAndMakeVisible (deck2);
     addAndMakeVisible (playlistComponent);
@@ -82,7 +85,7 @@ MainComponent::resized ()
 	// This is called when the MainContentComponent is resized.
 	// If you add any child components, this is where you should
 	// update their positions.
-    float sectionHeight = getHeight() / 3;
+    double sectionHeight = getHeight() / 3;
 	deck1.setBounds(0, 0, getWidth ()/2, 2*sectionHeight);
 	deck2.setBounds(getWidth()/2, 0, getWidth ()/2, 2*sectionHeight);
 	playlistComponent.setBounds(0, 2*sectionHeight, getWidth (), sectionHeight);

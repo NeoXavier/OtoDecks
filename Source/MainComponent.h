@@ -43,6 +43,8 @@ class MainComponent : public juce::AudioAppComponent,
 	juce::AudioFormatManager formatManager;
 	juce::AudioThumbnailCache thumbCache{ 100 };
 
+    PlaylistComponent playlistComponent;
+
 	DJAudioPlayer player1{ formatManager };
 	DeckGUI deck1{ &player1, formatManager, thumbCache, &playlistComponent, "Left"};
 
@@ -50,8 +52,6 @@ class MainComponent : public juce::AudioAppComponent,
 	DeckGUI deck2{ &player2, formatManager, thumbCache, &playlistComponent, "Right"};
 
 	juce::MixerAudioSource mixerSource;
-
-	PlaylistComponent playlistComponent;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

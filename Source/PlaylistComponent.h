@@ -10,11 +10,15 @@
 
 #pragma once
 
+#include "DeckGUI.h"
 #include <JuceHeader.h>
 
 //==============================================================================
 /*
  */
+
+class DeckGUI;
+
 class PlaylistComponent : public juce::Component,
                           public juce::TableListBoxModel,
                           public juce::Button::Listener,
@@ -48,6 +52,7 @@ class PlaylistComponent : public juce::Component,
     std::vector<juce::File> leftFiles;
     std::vector<juce::File> rightFiles;
 
+    void setDeck(DeckGUI* deck, juce::String id = "");
 
   private:
 	juce::TableListBox tableComponent;
@@ -60,6 +65,9 @@ class PlaylistComponent : public juce::Component,
 
     std::vector<juce::String> loadedTitles;
     std::vector<juce::File> loadedFiles;
+    
+    DeckGUI* leftDeck = nullptr;
+    DeckGUI* rightDeck = nullptr;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };
