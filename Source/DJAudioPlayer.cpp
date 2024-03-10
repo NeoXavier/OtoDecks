@@ -45,7 +45,7 @@ void DJAudioPlayer::pause()
 }
 
 void
-DJAudioPlayer::stop ()
+DJAudioPlayer::reset ()
 {
     transportSource.setPosition (0);
 	transportSource.stop ();

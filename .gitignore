@@ -4,3 +4,5 @@
 .rgignore
 
 tracks/
+
+source/scratch.cpp

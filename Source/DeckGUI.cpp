@@ -15,65 +15,64 @@
 //==============================================================================
 DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
                   juce::AudioFormatManager &formatManagerToUse,
-                  juce::AudioThumbnailCache &cacheToUse)
+                  juce::AudioThumbnailCache &cacheToUse,
+                  PlaylistComponent *_playlistComponent, juce::String _channel)
     : djAudioPlayer{ _djAudioPlayer },
-      waveform (formatManagerToUse, cacheToUse)
+      waveform (formatManagerToUse, cacheToUse),
+      playlistComponent{ _playlistComponent }, channel{ _channel }
 {
 	// In your constructor, you should add any child components, and
 	// initialise any special settings that your component needs.
 
-    // Buttons
+	// Buttons
 	addAndMakeVisible (playButton);
-	addAndMakeVisible (pauseButton);
-	addAndMakeVisible (stopButton);
+	addAndMakeVisible (nextButton);
+	addAndMakeVisible (resetButton);
 
-
-    // Sliders
+	// Sliders
 	addAndMakeVisible (volSlider);
 	addAndMakeVisible (speedSlider);
 
-    volSlider.setRange (0, 10);
-    volSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    volSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 90, 20);
+	volSlider.setRange (0, 1);
+	volSlider.setValue (0.8);
+	volSlider.setSliderStyle (juce::Slider::SliderStyle::LinearBarVertical);
+	volSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 0, 0);
 
-    speedSlider.setRange (0, 10);
-    speedSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    speedSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 90, 20);
+	speedSlider.setRange (0, 10, 0.5);
+	speedSlider.setSliderStyle (juce::Slider::SliderStyle::Rotary);
+	speedSlider.setTextBoxStyle (juce::Slider::TextBoxBelow, true, 90, 20);
 
+	// Slider Labels
+	addAndMakeVisible (volLabel);
+	volLabel.setJustificationType (juce::Justification::centred);
+	volLabel.attachToComponent (&volSlider, false);
+	addAndMakeVisible (speedLabel);
+	speedLabel.attachToComponent (&speedSlider, false);
+	speedLabel.setJustificationType (juce::Justification::centred);
 
-    // Slider Labels
-    addAndMakeVisible (volLabel);
-    addAndMakeVisible (speedLabel);
-
-    volLabel.setJustificationType(juce::Justification::centred);
-    speedLabel.setJustificationType(juce::Justification::centred);
-
-
-    // Waveform
+	// Waveform
 	addAndMakeVisible (waveform);
-    waveform.setInterceptsMouseClicks(false, false);
+	waveform.setInterceptsMouseClicks (false, false);
 
-    addAndMakeVisible (positionSlider);
-    positionSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
-    positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 90, 20);
-    positionSlider.setAlpha(0);
+	addAndMakeVisible (positionSlider);
+	positionSlider.setSliderStyle (juce::Slider::SliderStyle::LinearBar);
+	positionSlider.setTextBoxStyle (juce::Slider::NoTextBox, true, 90, 20);
+	positionSlider.setAlpha (0);
 
-    // Load Button
-	addAndMakeVisible (loadButton);
+	// Queue list
+	addAndMakeVisible (queueComponent);
+	queueComponent.getHeader ().addColumn ("Queue", 1, 100);
+	queueComponent.setModel (this);
 
-
-    // Add listeners
+	// Add listeners
 	playButton.addListener (this);
-	stopButton.addListener (this);
-    pauseButton.addListener (this);
+	resetButton.addListener (this);
+	nextButton.addListener (this);
 	volSlider.addListener (this);
 	positionSlider.addListener (this);
 	speedSlider.addListener (this);
-	loadButton.addListener (this);
-
 
 	startTimer (200);
-
 }
 
 DeckGUI::~DeckGUI () { stopTimer (); }
@@ -98,26 +97,23 @@ DeckGUI::resized ()
 	// This method is where you should set the bounds of any child
 	// components that your component contains..
 
-    int numOfRows = 8;
-    int numOfCols = 2;
+	int numOfRows = 6;
+	int numOfCols = 3;
 	float rowH = getHeight () / numOfRows;
-    float colW = getWidth() / numOfCols;
+	float colW = getWidth () / numOfCols;
+	int padding = 20;
 
-	playButton.setBounds (0, 0, colW, rowH);
-    pauseButton.setBounds (colW, 0, colW, rowH);
-	stopButton.setBounds (0, rowH, getWidth (), rowH);
+	resetButton.setBounds (0, 0, colW, rowH);
+	playButton.setBounds (colW, 0, colW, rowH);
+	nextButton.setBounds (colW * 2, 0, colW, rowH);
 
-    volLabel.setBounds (0, rowH * 2, colW, rowH);
-    speedLabel.setBounds (colW, rowH * 2, colW, rowH);
+	positionSlider.setBounds (0, rowH, getWidth (), rowH * 2);
+	waveform.setBounds (0, rowH, getWidth (), rowH * 2);
 
-	volSlider.setBounds (0, rowH * 3, colW, rowH*2);
-	speedSlider.setBounds (colW, rowH * 3, colW, rowH * 2);
-
-    positionSlider.setBounds (0, rowH * 5, getWidth (), rowH*2);
-	waveform.setBounds (0, rowH * 5, getWidth (), rowH * 2);
-
-
-	loadButton.setBounds (0, rowH * 7, getWidth (), rowH);
+    queueComponent.setBounds (0, rowH * 3, colW, rowH * 2);
+    speedSlider.setBounds (colW, rowH * 3 + padding, colW, rowH * 2 - padding);
+	volSlider.setBounds (colW * 2, rowH * 3 + padding, colW,
+	                     rowH * 2 - padding);
 }
 
 void
@@ -125,25 +121,14 @@ DeckGUI::buttonClicked (juce::Button *button)
 {
 	if (button == &playButton)
 		{
-			djAudioPlayer->play ();
+			if (isPlaying) { djAudioPlayer->play (); }
+			else { djAudioPlayer->pause (); }
 		}
-    if (button == &pauseButton)
-    {
-        djAudioPlayer->pause ();
-    }
-	if (button == &stopButton) { djAudioPlayer->stop (); }
-	if (button == &loadButton)
-		{
-			auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles;
-			fChooser.launchAsync (
-			    fileChooserFlags, [this] (const juce::FileChooser &chooser) {
-				    auto chosenFile = chooser.getResult ();
-				    djAudioPlayer->loadURL (juce::URL{ chosenFile });
-                    DBG(djAudioPlayer->getMaxLength());
-                    positionSlider.setRange(0, djAudioPlayer->getMaxLength());
-				    waveform.loadURL (juce::URL{ chosenFile });
-			    });
-		}
+	if (button == &nextButton) {}
+	{
+		djAudioPlayer->reset ();
+	}
+	if (button == &resetButton) { djAudioPlayer->reset (); }
 }
 
 void
@@ -153,30 +138,11 @@ DeckGUI::sliderValueChanged (juce::Slider *slider)
 	if (slider == &positionSlider)
 		{
 			djAudioPlayer->setPosition (slider->getValue ());
-            DBG(slider->getValue());
+			DBG (slider->getValue ());
 		}
 	if (slider == &speedSlider)
 		{
 			djAudioPlayer->setSpeed (slider->getValue ());
-		}
-}
-
-bool
-DeckGUI::isInterestedInFileDrag (const juce::StringArray &files)
-{
-	std::cout << "isInterestedInFileDrag" << std::endl;
-	return true;
-}
-
-void
-DeckGUI::filesDropped (const juce::StringArray &files, int x, int y)
-{
-	std::cout << "DeckGUI:: files dropped" << std::endl;
-	if (files.size () == 1)
-		{
-			djAudioPlayer->loadURL (juce::URL{ juce::File{ files[0] } });
-            DBG(djAudioPlayer->getMaxLength());
-            positionSlider.setRange(0, djAudioPlayer->getMaxLength());
 		}
 }
 
@@ -186,3 +152,42 @@ DeckGUI::timerCallback ()
 	// DBG ("DeckGUI::timerCallback");
 	waveform.setPositionRelative (djAudioPlayer->getPositionRelative ());
 }
+
+int
+DeckGUI::getNumRows ()
+{
+    if (channel == "Left") { return playlistComponent->leftFiles.size (); }
+    if (channel == "Right") { return playlistComponent->rightFiles.size (); }
+    return 0;
+}
+
+void
+DeckGUI::paintRowBackground (juce::Graphics &g, int rowNumber, int width,
+                             int height, bool rowIsSelected)
+{
+	if (rowIsSelected) { g.fillAll (juce::Colours::orange); }
+	else { g.fillAll (juce::Colours::darkgrey); }
+};
+
+void
+DeckGUI::paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
+                    int height, bool rowIsSelected)
+{
+	if (columnId == 1)
+		{
+			if (channel == "Left")
+				{
+					g.drawText (
+					    playlistComponent->leftFiles[rowNumber].getFileName (),
+					    2, 0, width - 4, height,
+					    juce::Justification::centredLeft, true);
+				}
+			else if (channel == "Right")
+				{
+					g.drawText (playlistComponent->rightFiles[rowNumber]
+					                .getFileName (),
+					            2, 0, width - 4, height,
+					            juce::Justification::centredLeft, true);
+				}
+		}
+};

@@ -12,19 +12,20 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent ()
+PlaylistComponent::PlaylistComponent () 
 {
+
 	// In your constructor, you should add any child components, and
 	// initialise any special settings that your component needs.
 	addAndMakeVisible (tableComponent);
 	tableComponent.getHeader ().addColumn ("Track title", 1, 400);
-	tableComponent.getHeader ().addColumn ("", 2, 200);
-    tableComponent.setModel(this);
+	tableComponent.getHeader ().addColumn ("Add to L Queue", 2, 200);
+	tableComponent.getHeader ().addColumn ("Add to R Queue", 3, 200);
+	tableComponent.setModel (this);
 
-    trackTitles.push_back("Track 1");
-    trackTitles.push_back("Track 2");
-    trackTitles.push_back("Track 3");
-    trackTitles.push_back("Track 4");
+	// Load Button
+	addAndMakeVisible (loadButton);
+	loadButton.addListener (this);
 }
 
 PlaylistComponent::~PlaylistComponent () {}
@@ -50,21 +51,21 @@ PlaylistComponent::paint (juce::Graphics &g)
 	g.drawText ("PlaylistComponent", getLocalBounds (),
 	            juce::Justification::centred,
 	            true);  // draw some placeholder text
-
 }
 
 void
 PlaylistComponent::resized ()
 {
 
-	tableComponent.setBounds (0, 0, getWidth (), getHeight ());
+	tableComponent.setBounds (0, 0, getWidth (), getHeight () - 20);
 
+    loadButton.setBounds (0, getHeight()-20, getWidth (), 20);
 }
 
 int
 PlaylistComponent::getNumRows ()
 {
-    return trackTitles.size();
+	return loadedTitles.size ();
 }
 
 void
@@ -81,39 +82,99 @@ void
 PlaylistComponent::paintCell (juce::Graphics &g, int rowNumber, int columnId,
                               int width, int height, bool rowIsSelected)
 {
-	g.drawText (trackTitles[rowNumber], 2, 0, width - 4, height,
-	            juce::Justification::centredLeft, true);
+	if (columnId == 1)
+		{
+			g.drawText (loadedTitles[rowNumber], 2, 0, width - 4, height,
+			            juce::Justification::centredLeft, true);
+		}
 }
 
-juce::Component* 
-PlaylistComponent::refreshComponentForCell (int rowNumber, int columnId, bool isRowSelected, Component* existingComponentToUpdate)
+juce::Component *
+PlaylistComponent::refreshComponentForCell (
+    int rowNumber, int columnId, bool isRowSelected,
+    Component *existingComponentToUpdate)
 {
 
-    if (columnId == 2)
-    {
-
-        if (existingComponentToUpdate == nullptr)
-        {
-
-            juce::TextButton* btn = new juce::TextButton("Play");
-            existingComponentToUpdate = btn;
-            btn->addListener(this);
-
-            juce::String id{std::to_string(rowNumber)};
-            btn->setComponentID(id);
-
-        }
-
-    }
-
-    return existingComponentToUpdate;
-
+	if (columnId == 2)
+		{
+			if (existingComponentToUpdate == nullptr)
+				{
+					juce::TextButton *btn = new juce::TextButton{ "Add to L" };
+					juce::String id{ std::to_string (rowNumber) + "L" };
+					btn->setComponentID (id);
+					btn->addListener (this);
+					existingComponentToUpdate = btn;
+				}
+		}
+	if (columnId == 3)
+		{
+			if (existingComponentToUpdate == nullptr)
+				{
+					juce::TextButton *btn = new juce::TextButton{ "Add to R" };
+					juce::String id{ std::to_string (rowNumber) + "R" };
+					btn->setComponentID (id);
+					btn->addListener (this);
+					existingComponentToUpdate = btn;
+				}
+		}
+	return existingComponentToUpdate;
 }
 
-void PlaylistComponent::buttonClicked (juce::Button* button)
+void
+PlaylistComponent::buttonClicked (juce::Button *button)
 {
-    DBG("PlaylistComponent::buttonClicked ");
-
-    int id = std::stoi(button->getComponentID().toStdString());
-    DBG("PlaylistComponent::buttonClicked" << trackTitles[id]);
+	if (button == &loadButton)
+		{
+			auto fileChooserFlags
+			    = juce::FileBrowserComponent::openMode
+			      | juce::FileBrowserComponent::canSelectFiles;
+			fChooser.launchAsync (
+			    fileChooserFlags, [this] (const juce::FileChooser &chooser) {
+				    juce::File chosenFile = chooser.getResult ();
+				    if (chosenFile.exists ())
+					    {
+						    loadedFiles.push_back (chosenFile);
+						    loadedTitles.push_back (chosenFile.getFileName ());
+						    tableComponent.updateContent ();
+					    }
+			    });
+		}
+	else
+		{
+			juce::String id = button->getComponentID ().toStdString ();
+            if(id.getLastCharacter() == 'L')
+            {
+                std::cout << "Add to L Queue" << std::endl;
+                int fileIndex = id.dropLastCharacters(1).getIntValue();
+                leftFiles.push_back(loadedFiles[fileIndex]);
+            }
+            else
+            {
+                std::cout << "Add to R Queue" << std::endl;
+                int fileIndex = id.dropLastCharacters(1).getIntValue();
+                rightFiles.push_back(loadedFiles[fileIndex]);
+            }
+		}
 }
+
+bool
+PlaylistComponent::isInterestedInFileDrag (const juce::StringArray &files)
+{
+	std::cout << "isInterestedInFileDrag" << std::endl;
+	return true;
+}
+
+void
+PlaylistComponent::filesDropped (const juce::StringArray &files, int x, int y)
+{
+	std::cout << "DeckGUI:: files dropped" << std::endl;
+	if (files.size () == 1)
+		{
+			DBG (juce::URL{ juce::File{ files[0] } }.getFileName ());
+			juce::File loadedFile{ files[0] };
+			loadedFiles.push_back (loadedFile);
+			loadedTitles.push_back (loadedFile.getFileName ());
+		}
+	tableComponent.updateContent ();
+}
+

@@ -44,10 +44,10 @@ class MainComponent : public juce::AudioAppComponent,
 	juce::AudioThumbnailCache thumbCache{ 100 };
 
 	DJAudioPlayer player1{ formatManager };
-	DeckGUI deck1{ &player1, formatManager, thumbCache };
+	DeckGUI deck1{ &player1, formatManager, thumbCache, &playlistComponent, "Left"};
 
 	DJAudioPlayer player2{ formatManager };
-	DeckGUI deck2{ &player2, formatManager, thumbCache };
+	DeckGUI deck2{ &player2, formatManager, thumbCache, &playlistComponent, "Right"};
 
 	juce::MixerAudioSource mixerSource;
 

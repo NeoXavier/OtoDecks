@@ -23,7 +23,7 @@ public:
     // Play and stop the audio
     void play();
     void pause();
-    void stop();
+    void reset();
     
     // Set the gain and position of the audio
     void setGain(double gain);

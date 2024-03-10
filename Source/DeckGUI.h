@@ -12,6 +12,7 @@
 
 #include "DJAudioPlayer.h"
 #include <JuceHeader.h>
+#include "PlaylistComponent.h"
 #include "WaveformDisplay.h"
 
 //==============================================================================
@@ -20,13 +21,15 @@
 class DeckGUI : public juce::Component,
                 public juce::Button::Listener,
                 public juce::Slider::Listener,
-                public juce::FileDragAndDropTarget,
-                public juce:: Timer
+                public juce:: Timer,
+                public juce::TableListBoxModel
 {
   public:
 	DeckGUI (DJAudioPlayer *_djAudioPlayer,
             juce::AudioFormatManager& formatManagerToUse, 
-            juce::AudioThumbnailCache& cacheToUse);
+            juce::AudioThumbnailCache& cacheToUse,
+            PlaylistComponent* _playlistComponent,
+            juce::String _channel);
 	~DeckGUI () override;
 
 
@@ -40,19 +43,21 @@ class DeckGUI : public juce::Component,
     // Slider::Listener
 	void sliderValueChanged (juce::Slider *slider) override;
 
-    // FileDragAndDropTarget
-    bool isInterestedInFileDrag(const juce::StringArray& files) override;
-    void filesDropped(const juce::StringArray& files, int x, int y) override;
-
     // Timer
     void timerCallback() override;
 
+    // TableListBoxModel
+	int getNumRows () override;
+	void paintRowBackground (juce::Graphics &g, int rowNumber, int width,
+	                         int height, bool rowIsSelected) override;
+	void paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
+	                int height, bool rowIsSelected) override;
+
   private:
     // Buttons
-	juce::TextButton playButton{ "PLAY" };
-    juce::TextButton pauseButton{ "PAUSE" };
-	juce::TextButton stopButton{ "STOP" };
-	juce::TextButton loadButton{ "LOAD" };
+	juce::TextButton playButton{ "PLAY/PAUSE" };
+	juce::TextButton resetButton{ "RESET" };
+    juce::TextButton nextButton{ "NEXT" };
 
     // Sliders
 	juce::Slider volSlider;
@@ -62,14 +67,18 @@ class DeckGUI : public juce::Component,
     juce::Label volLabel{ "Volume Label", "Volume" };
     juce::Label speedLabel{ "Speed Label", "Speed" };
 
-    // File Chooser
-	// https://docs.juce.com/master/classFileChooser.html#ac888983e4abdd8401ba7d6124ae64ff3
-	juce::FileChooser fChooser{ "Select a file..." };
-
-
 	DJAudioPlayer *djAudioPlayer;
 
     WaveformDisplay waveform;
+
+    //Queue List
+    juce::TableListBox queueComponent;
+
+    PlaylistComponent* playlistComponent;
+
+    juce::String channel;
+
+    bool isPlaying = false;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
 };
