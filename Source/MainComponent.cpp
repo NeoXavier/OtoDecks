@@ -34,6 +34,7 @@ MainComponent::MainComponent ()
 
     formatManager.registerBasicFormats();
 
+
 }
 
 MainComponent::~MainComponent ()

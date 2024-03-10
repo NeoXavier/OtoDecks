@@ -73,6 +73,12 @@ DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
 	positionSlider.addListener (this);
 	speedSlider.addListener (this);
 
+    getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::mediumpurple); //dial
+    getLookAndFeel().setColour(juce::Slider::trackColourId, juce::Colours::mediumpurple); //body
+    getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::lightslategrey); //body
+
+
+
 	startTimer (200);
 }
 

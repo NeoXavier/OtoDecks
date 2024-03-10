@@ -23,30 +23,43 @@ PlaylistComponent::PlaylistComponent ()
 	tableComponent.getHeader ().addColumn ("R Queue Buttons", 3, 200);
 	tableComponent.setModel (this);
 
+    getLookAndFeel().setColour(juce::ScrollBar::thumbColourId, juce::Colours::mediumpurple); //dial
+
 	// Load Button
 	addAndMakeVisible (loadButton);
 	loadButton.addListener (this);
 
-	auto start
+	// Search bar
+	addAndMakeVisible (searchBar);
+    searchBar.addListener (this);
+
+    addAndMakeVisible (searchLabel);
+    searchLabel.setJustificationType(juce::Justification::left);
+
+	// Load files from the tracks directory
+	auto directory
 	    = juce::File::getSpecialLocation (juce::File::currentExecutableFile);
-	while (start.exists () && !start.isRoot ())
+	// Walk down the directory tree to find the tracks directory
+	while (directory.exists () && !directory.isRoot ())
 		{
-			if (start.getSiblingFile ("tracks").exists ())
+			if (directory.getSiblingFile ("tracks").exists ())
 				{
-					start = start.getSiblingFile ("tracks");
+					directory = directory.getSiblingFile ("tracks");
 					break;
 				}
-			start = start.getParentDirectory ();
+			directory = directory.getParentDirectory ();
 		}
 
 	juce::Array<juce::File> fileArray;
-	start.findChildFiles (fileArray, juce::File::findFiles, false);
+	directory.findChildFiles (fileArray, juce::File::findFiles, false);
 	for (const auto &file : fileArray)
 		{
-			DBG (file.getFullPathName ());
 			loadedFiles.push_back (file);
-			loadedTitles.push_back (file.getFileName ());
+			currentTitles.push_back (file.getFileName ());
 		}
+
+    currentFiles = loadedFiles;
+
 	tableComponent.updateContent ();
 }
 
@@ -73,7 +86,9 @@ void
 PlaylistComponent::resized ()
 {
 
-	tableComponent.setBounds (0, 0, getWidth (), getHeight () - 20);
+    searchLabel.setBounds(0, 0, 100, 25);
+	searchBar.setBounds (100, 0, getWidth ()-100, 25);
+	tableComponent.setBounds (0, 25, getWidth (), getHeight () - 45);
 
 	loadButton.setBounds (0, getHeight () - 20, getWidth (), 20);
 }
@@ -81,7 +96,7 @@ PlaylistComponent::resized ()
 int
 PlaylistComponent::getNumRows ()
 {
-	return loadedTitles.size ();
+	return currentTitles.size ();
 }
 
 void
@@ -100,7 +115,7 @@ PlaylistComponent::paintCell (juce::Graphics &g, int rowNumber, int columnId,
 {
 	if (columnId == 1)
 		{
-			g.drawText (loadedTitles[rowNumber], 2, 0, width - 4, height,
+			g.drawText (currentTitles[rowNumber], 2, 0, width - 4, height,
 			            juce::Justification::centredLeft, true);
 		}
 }
@@ -113,10 +128,14 @@ PlaylistComponent::refreshComponentForCell (
 
 	if (columnId == 2)
 		{
-            // If the cell has no button OR
-            // if the cell has a button that belongs to another row, as TableListBox only renders 10 rows at a time and resuses the deleted buttons for the new rows
-			if (existingComponentToUpdate == nullptr || existingComponentToUpdate->getComponentID() != juce::String{std::to_string(rowNumber) + "L"})
-            {
+			// If the cell has no button OR
+			// if the cell has a button that belongs to another row, as
+			// TableListBox only renders 10 rows at a time and resuses the
+			// deleted buttons for the new rows
+			if (existingComponentToUpdate == nullptr
+			    || existingComponentToUpdate->getComponentID ()
+			           != juce::String{ std::to_string (rowNumber) + "L" })
+				{
 					juce::TextButton *btn
 					    = new juce::TextButton{ "Add to L Queue" };
 					juce::String id{ std::to_string (rowNumber) + "L" };
@@ -128,7 +147,9 @@ PlaylistComponent::refreshComponentForCell (
 
 	if (columnId == 3)
 		{
-			if (existingComponentToUpdate == nullptr || existingComponentToUpdate->getComponentID() != juce::String{std::to_string(rowNumber) + "R"})
+			if (existingComponentToUpdate == nullptr
+			    || existingComponentToUpdate->getComponentID ()
+			           != juce::String{ std::to_string (rowNumber) + "R" })
 				{
 					juce::TextButton *btn
 					    = new juce::TextButton{ "Add to R Queue" };
@@ -155,7 +176,9 @@ PlaylistComponent::buttonClicked (juce::Button *button)
 				    if (chosenFile.exists ())
 					    {
 						    loadedFiles.push_back (chosenFile);
-						    loadedTitles.push_back (chosenFile.getFileName ());
+                            currentFiles.push_back (chosenFile);
+						    currentTitles.push_back (
+						        chosenFile.getFileName ());
 						    tableComponent.updateContent ();
 					    }
 			    });
@@ -168,7 +191,8 @@ PlaylistComponent::buttonClicked (juce::Button *button)
 				{
 					std::cout << "Add to L Queue" << std::endl;
 					int fileIndex = id.dropLastCharacters (1).getIntValue ();
-					leftFiles.push_back (loadedFiles[fileIndex]);
+                    DBG(fileIndex);
+					leftFiles.push_back (currentFiles[fileIndex]);
 					if (leftDeck != nullptr)
 						{
 							leftDeck->queueComponent.updateContent ();
@@ -178,7 +202,7 @@ PlaylistComponent::buttonClicked (juce::Button *button)
 				{
 					std::cout << "Add to R Queue" << std::endl;
 					int fileIndex = id.dropLastCharacters (1).getIntValue ();
-					rightFiles.push_back (loadedFiles[fileIndex]);
+					rightFiles.push_back (currentFiles[fileIndex]);
 					if (rightDeck != nullptr)
 						{
 							rightDeck->queueComponent.updateContent ();
@@ -203,8 +227,33 @@ PlaylistComponent::filesDropped (const juce::StringArray &files, int x, int y)
 			DBG (juce::URL{ juce::File{ files[0] } }.getFileName ());
 			juce::File loadedFile{ files[0] };
 			loadedFiles.push_back (loadedFile);
-			loadedTitles.push_back (loadedFile.getFileName ());
+			currentTitles.push_back (loadedFile.getFileName ());
 		}
+	tableComponent.updateContent ();
+}
+
+void
+PlaylistComponent::textEditorTextChanged (juce::TextEditor &)
+{
+	currentTitles.clear ();
+	currentFiles.clear ();
+
+	std::vector<juce::String> searchedTitles;
+	std::vector<juce::File> searchedFiles;
+
+	for (juce::File file : loadedFiles)
+		{
+			juce::String title = file.getFileName ();
+			if (title.containsIgnoreCase (searchBar.getText ()))
+				{
+					searchedTitles.push_back (title);
+					searchedFiles.push_back (file);
+				}
+		}
+
+	currentTitles = searchedTitles;
+	currentFiles = searchedFiles;
+
 	tableComponent.updateContent ();
 }
 

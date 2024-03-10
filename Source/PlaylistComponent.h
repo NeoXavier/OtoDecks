@@ -22,7 +22,8 @@ class DeckGUI;
 class PlaylistComponent : public juce::Component,
                           public juce::TableListBoxModel,
                           public juce::Button::Listener,
-                          public juce::FileDragAndDropTarget
+                          public juce::FileDragAndDropTarget,
+                          public juce::TextEditor::Listener
 
 {
   public:
@@ -39,35 +40,46 @@ class PlaylistComponent : public juce::Component,
 
 	void paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
 	                int height, bool rowIsSelected) override;
-    
-    juce::Component* refreshComponentForCell (int rowNumber, int columnId, bool isRowSelected, Component* existingComponentToUpdate) override;
 
-    void buttonClicked (juce::Button* button) override;
+	juce::Component *
+	refreshComponentForCell (int rowNumber, int columnId, bool isRowSelected,
+	                         Component *existingComponentToUpdate) override;
 
-    // FileDragAndDropTarget
-    bool isInterestedInFileDrag(const juce::StringArray& files) override;
-    void filesDropped(const juce::StringArray& files, int x, int y) override;
+	void buttonClicked (juce::Button *button) override;
 
-    // Files to be used by DeckGUI
-    std::vector<juce::File> leftFiles;
-    std::vector<juce::File> rightFiles;
+	// FileDragAndDropTarget
+	bool isInterestedInFileDrag (const juce::StringArray &files) override;
+	void filesDropped (const juce::StringArray &files, int x, int y) override;
 
-    void setDeck(DeckGUI* deck, juce::String id = "");
+	//==============================================================================
+	/**Override of TextEditor::Listener function to be called whenever the user
+	changes the text in the object in some way*/
+	void textEditorTextChanged (juce::TextEditor &) override;
+
+	// Files to be used by DeckGUI
+	std::vector<juce::File> leftFiles;
+	std::vector<juce::File> rightFiles;
+
+	void setDeck (DeckGUI *deck, juce::String id = "");
 
   private:
 	juce::TableListBox tableComponent;
-    
+
 	juce::TextButton loadButton{ "LOAD" };
 
-    // File Chooser
+	// File Chooser
 	// https://docs.juce.com/master/classFileChooser.html#ac888983e4abdd8401ba7d6124ae64ff3
 	juce::FileChooser fChooser{ "Select a file..." };
 
-    std::vector<juce::String> loadedTitles;
-    std::vector<juce::File> loadedFiles;
-    
-    DeckGUI* leftDeck = nullptr;
-    DeckGUI* rightDeck = nullptr;
+	juce::TextEditor searchBar;
+    juce::Label searchLabel{"Search", "Search:"};
+
+	std::vector<juce::String> currentTitles;
+	std::vector<juce::File> loadedFiles;
+	std::vector<juce::File> currentFiles;
+
+	DeckGUI *leftDeck = nullptr;
+	DeckGUI *rightDeck = nullptr;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };
