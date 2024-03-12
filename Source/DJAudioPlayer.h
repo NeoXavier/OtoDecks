@@ -31,7 +31,6 @@ public:
     void setPosition(double posInSecs);
     void setPositionRelative(double pos);
     
-    double getMaxLength();
 
     // AudioSource methods
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -41,6 +40,10 @@ public:
     /** get the relative position of the playhead */
     double getPositionRelative();
 
+    /** get the length of the audio file */
+    double getMaxLength();
+
+    // If file is loaded into the source
     bool fileLoaded = false;
 
 private:

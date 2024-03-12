@@ -71,6 +71,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/misc/juce_ConsoleApplication.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_Variant.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_NamedValueSet.h \
+  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_DynamicObject.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_HashMap.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_FixedSizeFunction.h \
@@ -95,7 +96,6 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/files/juce_WildcardFileFilter.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_FileInputSource.h \
   /Users/xavier/JUCE/modules/juce_core/logging/juce_FileLogger.h \
-  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONUtils.h \
   /Users/xavier/JUCE/modules/juce_core/serialisation/juce_Serialisation.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONSerialisation.h \
@@ -139,6 +139,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/memory/juce_Reservoir.h \
   /Users/xavier/JUCE/modules/juce_core/files/juce_AndroidDocument.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_AndroidDocumentInputSource.h \
+  /Users/xavier/JUCE/modules/juce_core/detail/juce_CallbackListenerList.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_FloatVectorOperations.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h \
@@ -232,8 +233,12 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../assert.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../compat.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../endswap.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/deduplication/bitreader_read_rice_signed_block.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/bitwriter.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/bitwriter.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/format.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/../../../format.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/stream_encoder.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../alloc.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/compat.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c \
@@ -241,13 +246,14 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/fixed.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/fixed.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/float.h \
-  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/../../../format.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/float.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/format.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../format.h \
-  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/format.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/lpc_flac.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/lpc.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/deduplication/lpc_compute_autocorrelation_intrin.c \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/lpc_intrin_neon.c \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/deduplication/lpc_compute_autocorrelation_intrin_neon.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/md5.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/md5.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/memory.c \
@@ -260,9 +266,9 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/stream_encoder.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/../../../stream_encoder.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/../private/float.h \
-  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/stream_encoder.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/stream_encoder_framing.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/window.h \
+  /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/../private.h \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/stream_encoder_framing.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/window_flac.c \
   /Users/xavier/JUCE/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.cpp \

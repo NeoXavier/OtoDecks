@@ -17,6 +17,7 @@ DJAudioPlayer::DJAudioPlayer (juce::AudioFormatManager &_formatManager)
 
 DJAudioPlayer::~DJAudioPlayer () {}
 
+// Loads a file into the audio player
 void
 DJAudioPlayer::loadURL (juce::URL audioURL)
 {
@@ -34,32 +35,35 @@ DJAudioPlayer::loadURL (juce::URL audioURL)
 	else { std::cout << "Something went wrong loading the file" << std::endl; }
 }
 
+// Play audio player
 void
 DJAudioPlayer::play ()
 {
 	transportSource.start ();
-    DBG("DJAudioPlayer::play() called");
 }
 
+// Pause audio player
 void DJAudioPlayer::pause()
 {
     transportSource.stop();
-    DBG("DJAudioPlayer::pause() called");
 }
 
+// Reset to the start of the track
 void
 DJAudioPlayer::reset ()
 {
     transportSource.setPosition (0);
 	transportSource.stop ();
-    DBG("DJAudioPlayer::reset() called");
 }
+
+// Set the volume of the audio player
 void
 DJAudioPlayer::setGain (double gain)
 {
 	transportSource.setGain (gain);
 }
 
+// Set the position of the audio player
 void
 DJAudioPlayer::setPosition (double posInSecs)
 {
@@ -73,6 +77,7 @@ DJAudioPlayer::setPosition (double posInSecs)
 	transportSource.setPosition (posInSecs);
 }
 
+// Set the position of the audio player
 void
 DJAudioPlayer::setPositionRelative (double pos)
 {
@@ -89,6 +94,7 @@ DJAudioPlayer::setPositionRelative (double pos)
 		}
 }
 
+// Sets the speed of the audio player
 void
 DJAudioPlayer::setSpeed (double ratio)
 {
@@ -134,6 +140,7 @@ DJAudioPlayer::getPositionRelative ()
 	       / transportSource.getLengthInSeconds ();
 }
 
+// Gets the length of the loaded audio file
 double DJAudioPlayer::getMaxLength()
 {
     return transportSource.getLengthInSeconds();

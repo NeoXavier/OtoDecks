@@ -24,16 +24,18 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
-    void loadURL(juce::URL audioURL);
-
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     
+    void loadURL(juce::URL audioURL);
+
     /** set the relative position of the playhead */
     void setPositionRelative(double pos);
 
 private:
+    /// Waveform
     juce::AudioThumbnail audioThumbnail;
 
+    // File loaded state
     bool fileLoaded;
 
     juce::String fileName;

@@ -71,6 +71,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/misc/juce_ConsoleApplication.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_Variant.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_NamedValueSet.h \
+  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_DynamicObject.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_HashMap.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_FixedSizeFunction.h \
@@ -95,7 +96,6 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/files/juce_WildcardFileFilter.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_FileInputSource.h \
   /Users/xavier/JUCE/modules/juce_core/logging/juce_FileLogger.h \
-  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONUtils.h \
   /Users/xavier/JUCE/modules/juce_core/serialisation/juce_Serialisation.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONSerialisation.h \
@@ -139,6 +139,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/memory/juce_Reservoir.h \
   /Users/xavier/JUCE/modules/juce_core/files/juce_AndroidDocument.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_AndroidDocumentInputSource.h \
+  /Users/xavier/JUCE/modules/juce_core/detail/juce_CallbackListenerList.h \
   /Users/xavier/JUCE/modules/juce_core/native/juce_CFHelpers_mac.h \
   /Users/xavier/JUCE/modules/juce_core/native/juce_ObjCHelpers_mac.h \
   /Users/xavier/JUCE/modules/juce_events/juce_events.h \
@@ -158,7 +159,9 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_events/broadcasters/juce_ChangeListener.h \
   /Users/xavier/JUCE/modules/juce_events/broadcasters/juce_ChangeBroadcaster.h \
   /Users/xavier/JUCE/modules/juce_events/timers/juce_Timer.h \
+  /Users/xavier/JUCE/modules/juce_events/timers/juce_TimedCallback.h \
   /Users/xavier/JUCE/modules/juce_events/timers/juce_MultiTimer.h \
+  /Users/xavier/JUCE/modules/juce_events/interprocess/juce_ChildProcessManager.h \
   /Users/xavier/JUCE/modules/juce_events/interprocess/juce_InterprocessConnection.h \
   /Users/xavier/JUCE/modules/juce_events/interprocess/juce_InterprocessConnectionServer.h \
   /Users/xavier/JUCE/modules/juce_events/interprocess/juce_ConnectedChildProcess.h \
@@ -323,6 +326,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_TooltipWindow.h \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_VBlankAttachment.h \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_WindowUtils.h \
+  /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_NativeScaleFactorNotifier.h \
   /Users/xavier/JUCE/modules/juce_gui_basics/layout/juce_MultiDocumentPanel.h \
   /Users/xavier/JUCE/modules/juce_gui_basics/layout/juce_SidePanel.h \
   /Users/xavier/JUCE/modules/juce_gui_basics/filebrowser/juce_FileBrowserListener.h \
@@ -529,4 +533,5 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_ThreadWithProgressWindow.cpp \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp \
   /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_TopLevelWindow.cpp \
-  /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_VBlankAttachment.cpp
+  /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_VBlankAttachment.cpp \
+  /Users/xavier/JUCE/modules/juce_gui_basics/windows/juce_NativeScaleFactorNotifier.cpp

@@ -38,19 +38,25 @@ WaveformDisplay::paint (juce::Graphics &g)
     g.fillAll(getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
     g.setColour(juce::Colours::grey);
     g.drawRect(getLocalBounds(), 1);
+    
+    // Set the colour of the waveform to be medium purple
     g.setColour(juce::Colours::mediumpurple);
 
-	if (fileLoaded)
+	if (fileLoaded && position >= 0)
 		{
-			audioThumbnail.drawChannel (g, getLocalBounds (), 0,
-			                            audioThumbnail.getTotalLength (), 0,
-			                            1.0f);
-			g.setColour (juce::Colours::lightgreen);
-            g.drawLine(position * getWidth(), 0, position * getWidth(), getHeight(), 2.0f);
-
+            // Waveform
             // Display file name
             g.setFont(10.0f);
             g.drawText(fileName, getLocalBounds(), juce::Justification::centred, true);
+
+            audioThumbnail.drawChannel (g, getLocalBounds (), 0,
+                                        audioThumbnail.getTotalLength (), 0,
+                                        1.0f);
+
+            // Draw the playhead
+            g.setColour (juce::Colours::lightgreen);
+            g.drawLine(position * getWidth(), 1, position * getWidth(), getHeight(), 2.0f);
+
 		}
 	else
 		{

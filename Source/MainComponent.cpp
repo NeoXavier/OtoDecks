@@ -25,16 +25,17 @@ MainComponent::MainComponent ()
 			setAudioChannels (2, 2);
 		}
 
+    // Add decks to the playlist component 
+    // This is so that the playlist component can queue songs in the decks
     playlistComponent.setDeck(&deck1, "Left");
     playlistComponent.setDeck(&deck2, "Right");
 
+    // Make elements visible
     addAndMakeVisible (deck1);
     addAndMakeVisible (deck2);
     addAndMakeVisible (playlistComponent);
 
     formatManager.registerBasicFormats();
-
-
 }
 
 MainComponent::~MainComponent ()
@@ -90,14 +91,4 @@ MainComponent::resized ()
 	deck1.setBounds(0, 0, getWidth ()/2, 2*sectionHeight);
 	deck2.setBounds(getWidth()/2, 0, getWidth ()/2, 2*sectionHeight);
 	playlistComponent.setBounds(0, 2*sectionHeight, getWidth (), sectionHeight);
-}
-
-void
-MainComponent::buttonClicked (juce::Button *button)
-{
-}
-
-void
-MainComponent::sliderValueChanged (juce::Slider *slider)
-{
 }

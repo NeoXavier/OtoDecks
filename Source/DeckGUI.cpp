@@ -21,9 +21,6 @@ DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
       waveform (formatManagerToUse, cacheToUse),
       playlistComponent{ _playlistComponent }, channel{ _channel }
 {
-	// In your constructor, you should add any child components, and
-	// initialise any special settings that your component needs.
-
 	// Buttons
 	addAndMakeVisible (playButton);
 	addAndMakeVisible (nextButton);
@@ -62,7 +59,7 @@ DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
 	// Queue list
 	addAndMakeVisible (queueComponent);
 	queueComponent.getHeader ().addColumn ("Queue", 1, 180);
-    queueComponent.autoSizeColumn(1);
+	queueComponent.autoSizeColumn (1);
 	queueComponent.setModel (this);
 
 	// Add listeners
@@ -73,11 +70,13 @@ DeckGUI::DeckGUI (DJAudioPlayer *_djAudioPlayer,
 	positionSlider.addListener (this);
 	speedSlider.addListener (this);
 
-    getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::mediumpurple); //dial
-    getLookAndFeel().setColour(juce::Slider::trackColourId, juce::Colours::mediumpurple); //body
-    getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::lightslategrey); //body
-
-
+    // Set colours of sliders
+	getLookAndFeel ().setColour (juce::Slider::thumbColourId,
+	                             juce::Colours::mediumpurple);  // dial
+	getLookAndFeel ().setColour (juce::Slider::trackColourId,
+	                             juce::Colours::mediumpurple);  // body
+	getLookAndFeel ().setColour (juce::Slider::rotarySliderFillColourId,
+	                             juce::Colours::lightslategrey);  // body
 
 	startTimer (200);
 }
@@ -87,13 +86,6 @@ DeckGUI::~DeckGUI () { stopTimer (); }
 void
 DeckGUI::paint (juce::Graphics &g)
 {
-	/* This demo code just fills the component's background and
-	   draws some placeholder text to get you started.
-
-	   You should replace everything in this method with your own
-	   drawing code..
-	*/
-
 	g.fillAll (getLookAndFeel ().findColour (
 	    juce::ResizableWindow::backgroundColourId));  // clear the background
 }
@@ -101,110 +93,113 @@ DeckGUI::paint (juce::Graphics &g)
 void
 DeckGUI::resized ()
 {
-	// This method is where you should set the bounds of any child
-	// components that your component contains..
-
+    
 	int numOfRows = 6;
 	int numOfCols = 6;
 	float rowH = getHeight () / numOfRows;
 	float colW = getWidth () / numOfCols;
 	int padding = 20;
 
-	resetButton.setBounds (padding, padding, colW*2 - (2*padding), rowH - (2*padding));
-	playButton.setBounds (colW * 2 + padding, padding, colW *2 - (2*padding), rowH- (2*padding));
-	nextButton.setBounds (colW * 4+padding, padding, colW *2- (2*padding), rowH - (2*padding));
+    // Layout of DeckGUI
+	resetButton.setBounds (padding, padding, colW * 2 - (2 * padding),
+	                       rowH - (2 * padding));
+	playButton.setBounds (colW * 2 + padding, padding,
+	                      colW * 2 - (2 * padding), rowH - (2 * padding));
+	nextButton.setBounds (colW * 4 + padding, padding,
+	                      colW * 2 - (2 * padding), rowH - (2 * padding));
 
 	positionSlider.setBounds (0, rowH, getWidth (), rowH * 2);
 	waveform.setBounds (0, rowH, getWidth (), rowH * 2);
 
 	queueComponent.setBounds (0, rowH * 3, colW * 3, rowH * 3);
-	speedSlider.setBounds (colW*3, rowH * 3 + padding, colW*2, rowH * 3 - padding);
-	volSlider.setBounds (colW*5, rowH * 3 + padding, colW,
+	speedSlider.setBounds (colW * 3, rowH * 3 + padding, colW * 2,
+	                       rowH * 3 - padding);
+	volSlider.setBounds (colW * 5, rowH * 3 + padding, colW,
 	                     rowH * 3 - padding);
 }
 
 void
 DeckGUI::buttonClicked (juce::Button *button)
 {
+    // Event listener for play button
 	if (button == &playButton)
 		{
-            if (channel == "Left"){
-                files = &playlistComponent->leftFiles;
-            }else{
-                files = &playlistComponent->rightFiles;
-            }
+            // Check if the play button is from the left deck or right deck
+			if (channel == "Left") { files = &playlistComponent->leftFiles; }
+			else { files = &playlistComponent->rightFiles; }
 
+            // Check if the file is loaded
 			if (djAudioPlayer->fileLoaded)
 				{
+                    // If the file is playing, pause it. If it is paused, play it.
 					if (isPlaying)
 						{
-							DBG ("Pause song");
 							djAudioPlayer->pause ();
 							isPlaying = false;
 						}
 					else
 						{
-							DBG ("Resume song");
 							djAudioPlayer->play ();
 							isPlaying = true;
 						}
 				}
+
+            // If the file is not loaded, load the file and play it
 			else
 				{
-					DBG ("Play for the first time");
-
-                    juce::File file = files->at(0);
-					djAudioPlayer->loadURL (
-					    juce::URL{file});
+					juce::File file = files->at (0);
+					djAudioPlayer->loadURL (juce::URL{ file });
 
 					positionSlider.setRange (0,
 					                         djAudioPlayer->getMaxLength ());
 
-					waveform.loadURL (
-					    juce::URL{ file });
+					waveform.loadURL (juce::URL{ file });
 
-                    files->erase (files->begin ());
+					files->erase (files->begin ());
 					queueComponent.updateContent ();
 
 					djAudioPlayer->play ();
 					isPlaying = true;
 				}
 		}
+
+    // Event Listener for next button
 	if (button == &nextButton)
 		{
-            if (channel == "Left"){
-                files = &playlistComponent->leftFiles;
-            }else{
-                files = &playlistComponent->rightFiles;
-            }
+			if (channel == "Left") { files = &playlistComponent->leftFiles; }
+			else { files = &playlistComponent->rightFiles; }
 
-			DBG ("Next song");
-            juce::File file = files->at(0);
+			juce::File file = files->at (0);
 
-			djAudioPlayer->loadURL (
-			    juce::URL{ file});
+			djAudioPlayer->loadURL (juce::URL{ file });
 
 			positionSlider.setRange (0, djAudioPlayer->getMaxLength ());
 
-			waveform.loadURL (juce::URL{file});
+			waveform.loadURL (juce::URL{ file });
 
-            files->erase (files->begin ());
+			files->erase (files->begin ());
 			queueComponent.updateContent ();
 
 			djAudioPlayer->play ();
 		}
+    
+    // Event Listener for reset button
 	if (button == &resetButton) { djAudioPlayer->reset (); }
 }
 
 void
 DeckGUI::sliderValueChanged (juce::Slider *slider)
 {
+    // Event listener for volume slider
 	if (slider == &volSlider) { djAudioPlayer->setGain (slider->getValue ()); }
+
+    // Event listener for position slider
 	if (slider == &positionSlider)
 		{
 			djAudioPlayer->setPosition (slider->getValue ());
-			DBG (slider->getValue ());
 		}
+
+    // Event listener for speed slider
 	if (slider == &speedSlider)
 		{
 			djAudioPlayer->setSpeed (slider->getValue ());
@@ -214,13 +209,14 @@ DeckGUI::sliderValueChanged (juce::Slider *slider)
 void
 DeckGUI::timerCallback ()
 {
-	// DBG ("DeckGUI::timerCallback");
 	waveform.setPositionRelative (djAudioPlayer->getPositionRelative ());
 }
 
 int
 DeckGUI::getNumRows ()
 {
+    // Get the number of files in the queue
+    // Based of if the deck is left or right
 	if (channel == "Left") { return playlistComponent->leftFiles.size (); }
 	if (channel == "Right") { return playlistComponent->rightFiles.size (); }
 	return 0;
@@ -238,8 +234,10 @@ void
 DeckGUI::paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
                     int height, bool rowIsSelected)
 {
+    // Fill the queue list with the respective file list
 	if (columnId == 1)
 		{
+            // Left queue
 			if (channel == "Left")
 				{
 					g.drawText (
@@ -247,6 +245,7 @@ DeckGUI::paintCell (juce::Graphics &g, int rowNumber, int columnId, int width,
 					    2, 0, width - 4, height,
 					    juce::Justification::centredLeft, true);
 				}
+            // Right queue
 			else if (channel == "Right")
 				{
 					g.drawText (playlistComponent->rightFiles[rowNumber]

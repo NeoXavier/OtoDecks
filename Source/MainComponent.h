@@ -10,15 +10,14 @@
     This component lives inside our window, and this is where you should put
    all your controls and content.
 */
-class MainComponent : public juce::AudioAppComponent,
-                      public juce::Button::Listener,
-                      public juce::Slider::Listener
+class MainComponent : public juce::AudioAppComponent
 {
   public:
 	//==============================================================================
 	MainComponent ();
 	~MainComponent () override;
 
+    // AudioAppComponent Virtual Functions
 	//==============================================================================
 	void prepareToPlay (int samplesPerBlockExpected,
 	                    double sampleRate) override;
@@ -26,15 +25,10 @@ class MainComponent : public juce::AudioAppComponent,
 	    const juce::AudioSourceChannelInfo &bufferToFill) override;
 	void releaseResources () override;
 
+    // Component Virtual Functions
 	//==============================================================================
 	void paint (juce::Graphics &g) override;
 	void resized () override;
-
-	// Button::Listener
-	void buttonClicked (juce::Button *) override;
-
-	// Slider::Listener
-	void sliderValueChanged (juce::Slider *slider) override;
 
   private:
 	//==============================================================================
@@ -43,8 +37,10 @@ class MainComponent : public juce::AudioAppComponent,
 	juce::AudioFormatManager formatManager;
 	juce::AudioThumbnailCache thumbCache{ 100 };
 
+    // Playlist table
     PlaylistComponent playlistComponent;
 
+    // Each deck has a DJAudioPlayer and a DeckGUI
 	DJAudioPlayer player1{ formatManager };
 	DeckGUI deck1{ &player1, formatManager, thumbCache, &playlistComponent, "Left"};
 

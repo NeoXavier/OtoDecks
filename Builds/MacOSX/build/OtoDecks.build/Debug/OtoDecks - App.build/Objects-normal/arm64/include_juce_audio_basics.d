@@ -69,6 +69,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/misc/juce_ConsoleApplication.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_Variant.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_NamedValueSet.h \
+  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_DynamicObject.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_HashMap.h \
   /Users/xavier/JUCE/modules/juce_core/containers/juce_FixedSizeFunction.h \
@@ -93,7 +94,6 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/files/juce_WildcardFileFilter.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_FileInputSource.h \
   /Users/xavier/JUCE/modules/juce_core/logging/juce_FileLogger.h \
-  /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSON.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONUtils.h \
   /Users/xavier/JUCE/modules/juce_core/serialisation/juce_Serialisation.h \
   /Users/xavier/JUCE/modules/juce_core/javascript/juce_JSONSerialisation.h \
@@ -137,6 +137,7 @@ dependencies: \
   /Users/xavier/JUCE/modules/juce_core/memory/juce_Reservoir.h \
   /Users/xavier/JUCE/modules/juce_core/files/juce_AndroidDocument.h \
   /Users/xavier/JUCE/modules/juce_core/streams/juce_AndroidDocumentInputSource.h \
+  /Users/xavier/JUCE/modules/juce_core/detail/juce_CallbackListenerList.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_FloatVectorOperations.h \
   /Users/xavier/JUCE/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h \

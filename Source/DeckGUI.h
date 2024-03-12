@@ -39,16 +39,20 @@ class DeckGUI : public juce::Component,
 	void paint (juce::Graphics &) override;
 	void resized () override;
 
-    // Button::Listener
+    // Button::Listener virtual functions
+	//==============================================================================
 	void buttonClicked (juce::Button *button) override;
 
-    // Slider::Listener
+    // Slider::Listener virtual functions
+	//==============================================================================
 	void sliderValueChanged (juce::Slider *slider) override;
 
-    // Timer
+    // Timer virtual functions
+	//==============================================================================
     void timerCallback() override;
 
-    // TableListBoxModel
+    // TableListBoxModel virtual functions
+	//==============================================================================
 	int getNumRows () override;
 	void paintRowBackground (juce::Graphics &g, int rowNumber, int width,
 	                         int height, bool rowIsSelected) override;
@@ -64,24 +68,30 @@ class DeckGUI : public juce::Component,
 	juce::TextButton resetButton{ "RESET" };
     juce::TextButton nextButton{ "NEXT" };
 
-    // Sliders
+    // Sliders and labels
 	juce::Slider volSlider;
 	juce::Slider positionSlider;
 	juce::Slider speedSlider;
-
     juce::Label volLabel{ "Volume Label", "Volume" };
     juce::Label speedLabel{ "Speed Label", "Speed" };
 
+    
+    // Audio Source
 	DJAudioPlayer *djAudioPlayer;
 
+    // Waveform
     WaveformDisplay waveform;
 
+    // Pointer to the loaded files playlist
     PlaylistComponent* playlistComponent;
 
+    // Channel. Left or Right deck
     juce::String channel;
 
+    // If a track is currently being played
     bool isPlaying = false;
     
+    // Pointer to the files in the playlist
     std::vector<juce::File>* files;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
