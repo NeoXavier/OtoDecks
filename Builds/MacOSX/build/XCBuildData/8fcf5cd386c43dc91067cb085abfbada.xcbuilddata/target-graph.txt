@@ -1,2 +1,0 @@
-Target dependency graph (1 target)
-Target 'OtoDecks - App' in project 'OtoDecks' (no dependencies)
