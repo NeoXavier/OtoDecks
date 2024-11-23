@@ -1,8 +1,12 @@
+# MacOS directory artifacts
 .DS_Store
 .cache/
 
+# ripgrep
 .rgignore
 
+# Default audio files
 tracks/
 
+# Build directory
 Builds/MacOSX/build/

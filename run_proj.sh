@@ -1,7 +1,12 @@
 #!/bin/bash
+# Create an empty tracks folder if it doesn't exist
+if [ ! -d "tracks" ]; then
+    mkdir tracks
+fi
+
 # Compile and run JUCE project
 
-PROJECT_NAME="OtoDecks"  
+PROJECT_NAME="OtoDecks"
 PROJECT_ROOT="$(pwd)"
 
 # Navigate to the directory where the project is located
