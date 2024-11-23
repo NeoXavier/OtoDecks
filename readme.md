@@ -1,6 +1,8 @@
 # OtoDecks
 
 An Audio Mixing/DJ App built with C++ and JUCE
+![CleanShot 2024-11-24 at 01 43 29@2x](https://github.com/user-attachments/assets/0c42c0ce-01c4-4b79-8b14-30294290573a)
+
 
 ## Description
 
